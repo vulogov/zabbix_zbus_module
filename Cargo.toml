@@ -1,0 +1,11 @@
+[package]
+name = "zbus"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["staticlib"]
+bench = false
+
+[dependencies]
+libc = "0.2.*"
