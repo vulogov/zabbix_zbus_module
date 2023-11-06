@@ -2,7 +2,8 @@ all: debug
 
 debug: zbus.c
 	cargo build
-	gcc -fPIC -shared -o zbus.so zbus.c -I. -I../zabbix/include -I../zabbix/include/common -L./target/debug -lzbus
+	gcc -fPIC -shared -o zbus_module.so zbus.c -I. -I../zabbix/include -I../zabbix/include/common -L./target/debug -lzbus_module
+	find ./target/debug -maxdepth 1 -name "lib*.so" -o -name "libzbus*.dylib" -exec cp {} . \;
 
 clean:
-	rm -f zbus.so
+	rm -f zbus_module.so libzbus_module.*

@@ -7,7 +7,7 @@
 
 static int      item_timeout = 0;
 
-extern void zrhai_module_init(void);
+extern int zbus_module_init(void);
 extern int zrhai_module_ping(void);
 
 static int      dummy_ping(AGENT_REQUEST *request, AGENT_RESULT *result);
@@ -16,7 +16,7 @@ static int      dummy_ping(AGENT_REQUEST *request, AGENT_RESULT *result);
 static ZBX_METRIC keys[] =
 /*      KEY                     FLAG            FUNCTION        TEST PARAMETERS */
 {
-        {"dummy.ping",          0,              dummy_ping,     NULL},
+        {"zbus.ping",          0,              dummy_ping,     NULL},
         {NULL}
 };
 
@@ -78,8 +78,9 @@ static int      dummy_ping(AGENT_REQUEST *request, AGENT_RESULT *result)
  ******************************************************************************/
 int     zbx_module_init(void)
 {
-        zrhai_module_init();
-
+        if (zbus_module_init() == 0) {
+            return ZBX_MODULE_FAIL;
+        }
         return ZBX_MODULE_OK;
 }
 
