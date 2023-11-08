@@ -8,15 +8,20 @@
 static int      item_timeout = 0;
 
 extern int zbus_module_init(void);
-extern int zrhai_module_ping(void);
+extern int zbus_module_ping(void);
+extern char* zbus_module_get_str(char*);
+extern void free_string(char*);
 
-static int      dummy_ping(AGENT_REQUEST *request, AGENT_RESULT *result);
+static int      zbus_ping(AGENT_REQUEST *request, AGENT_RESULT *result);
+static int      zbus_get_str(AGENT_REQUEST *request, AGENT_RESULT *result);
+
 
 
 static ZBX_METRIC keys[] =
 /*      KEY                     FLAG            FUNCTION        TEST PARAMETERS */
 {
-        {"zbus.ping",          0,              dummy_ping,     NULL},
+        {"zbus.ping",          0,              zbus_ping,     NULL},
+        {"zbus.get_str",       CF_HAVEPARAMS,  zbus_get_str,  NULL},
         {NULL}
 };
 
@@ -58,24 +63,33 @@ ZBX_METRIC      *zbx_module_item_list(void)
         return keys;
 }
 
-static int      dummy_ping(AGENT_REQUEST *request, AGENT_RESULT *result)
+static int      zbus_ping(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
-        SET_UI64_RESULT(result, zrhai_module_ping());
+        SET_UI64_RESULT(result, zbus_module_ping());
 
         return SYSINFO_RET_OK;
 }
 
-/******************************************************************************
- *                                                                            *
- * Purpose: the function is called on agent startup                           *
- *          It should be used to call any initialization routines             *
- *                                                                            *
- * Return value: ZBX_MODULE_OK - success                                      *
- *               ZBX_MODULE_FAIL - module initialization failed               *
- *                                                                            *
- * Comment: the module won't be loaded in case of ZBX_MODULE_FAIL             *
- *                                                                            *
- ******************************************************************************/
+static int      zbus_get_str(AGENT_REQUEST *request, AGENT_RESULT *result)
+{
+
+    if (request->nparam == 0) {
+      SET_MSG_RESULT(result, strdup("Key not provided"));
+      return SYSINFO_RET_FAIL;
+    } else {
+      char *buffer = zbus_module_get_str(get_rparam(request, 0));
+
+      if (buffer == NULL) {
+        SET_MSG_RESULT(result, strdup("Key not found on zbus"));
+        return SYSINFO_RET_FAIL;
+      } else {
+        SET_STR_RESULT(result, strdup(buffer));
+        free_string(buffer);
+        return SYSINFO_RET_OK;
+      }
+    }
+}
+
 int     zbx_module_init(void)
 {
         if (zbus_module_init() == 0) {
