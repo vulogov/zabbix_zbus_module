@@ -1,5 +1,5 @@
 extern crate log;
-use libc::{c_int, c_char};
+use libc::{c_char};
 use std::ffi::{CString, CStr};
 
 use crate::zbus_zenoh;
@@ -15,10 +15,9 @@ pub extern fn zbus_module_get_str(key: *const c_char) -> *const c_char {
         Ok(zbus_key) => {
             match zbus_zenoh::get(zbus_key.to_string()) {
                 Some(res) => {
-                    println!("{:?}", &res);
                     match res.get("value") {
                         Some(value) => {
-                            return CString::new(value.to_string()).expect("BOO").into_raw();
+                            return CString::new(value.to_string()).expect("Expecting a value").into_raw();
                         }
                         None => {
                             return std::ptr::null();

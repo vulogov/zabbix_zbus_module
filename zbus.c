@@ -14,7 +14,8 @@ extern void free_string(char*);
 
 static int      zbus_ping(AGENT_REQUEST *request, AGENT_RESULT *result);
 static int      zbus_get_str(AGENT_REQUEST *request, AGENT_RESULT *result);
-
+static int      zbus_get_int(AGENT_REQUEST *request, AGENT_RESULT *result);
+static int      zbus_get_float(AGENT_REQUEST *request, AGENT_RESULT *result);
 
 
 static ZBX_METRIC keys[] =
@@ -22,6 +23,8 @@ static ZBX_METRIC keys[] =
 {
         {"zbus.ping",          0,              zbus_ping,     NULL},
         {"zbus.get_str",       CF_HAVEPARAMS,  zbus_get_str,  NULL},
+        {"zbus.get_int",       CF_HAVEPARAMS,  zbus_get_int,  NULL},
+        {"zbus.get_float",     CF_HAVEPARAMS,  zbus_get_float,  NULL},
         {NULL}
 };
 
@@ -84,6 +87,60 @@ static int      zbus_get_str(AGENT_REQUEST *request, AGENT_RESULT *result)
         return SYSINFO_RET_FAIL;
       } else {
         SET_STR_RESULT(result, strdup(buffer));
+        free_string(buffer);
+        return SYSINFO_RET_OK;
+      }
+    }
+}
+
+static int      zbus_get_int(AGENT_REQUEST *request, AGENT_RESULT *result)
+{
+
+    if (request->nparam == 0) {
+      SET_MSG_RESULT(result, strdup("Key not provided"));
+      return SYSINFO_RET_FAIL;
+    } else {
+      char *buffer = zbus_module_get_str(get_rparam(request, 0));
+
+      if (buffer == NULL) {
+        SET_MSG_RESULT(result, strdup("Key not found on zbus"));
+        return SYSINFO_RET_FAIL;
+      } else {
+        char* ptr;
+        long res = strtol(buffer, &ptr, 10);
+        if (buffer == ptr) {
+          free_string(buffer);
+          SET_MSG_RESULT(result, strdup("Error parsing value"));
+          return SYSINFO_RET_FAIL;
+        }
+        SET_UI64_RESULT(result, res);
+        free_string(buffer);
+        return SYSINFO_RET_OK;
+      }
+    }
+}
+
+static int      zbus_get_float(AGENT_REQUEST *request, AGENT_RESULT *result)
+{
+
+    if (request->nparam == 0) {
+      SET_MSG_RESULT(result, strdup("Key not provided"));
+      return SYSINFO_RET_FAIL;
+    } else {
+      char *buffer = zbus_module_get_str(get_rparam(request, 0));
+
+      if (buffer == NULL) {
+        SET_MSG_RESULT(result, strdup("Key not found on zbus"));
+        return SYSINFO_RET_FAIL;
+      } else {
+        char* ptr;
+        double res = strtod(buffer, &ptr);
+        if (buffer == ptr) {
+          free_string(buffer);
+          SET_MSG_RESULT(result, strdup("Error parsing value"));
+          return SYSINFO_RET_FAIL;
+        }
+        SET_DBL_RESULT(result, res);
         free_string(buffer);
         return SYSINFO_RET_OK;
       }
