@@ -1,3 +1,5 @@
+![Zabbix Federation](https://github.com/vulogov/zbus/blob/cb40cae526466aee0bae857c4a18fb8afdde6e25/Documentation/ZabbixFederation_Base.png)
+
 ## Introduction
 
 Observing and monitoring complex environments can be a difficult task due to the complexity of the environment itself. As the complexity of the environment increases, setting up an influential and representative Observability configuration becomes more challenging. The key to managing Observability infrastructure is comprehending and managing its complexity rather than just its scalability. While scalability is important, it is a more controllable aspect of Observability infrastructure management than complexity. Therefore, the success of an Observability infrastructure largely depends on how well its complexity is managed. But what are the keys to successfully managing complexity as a primary goal and scalability as the secondary? We have to keep a few aspects in mind that will help us navigate those obstacles:
@@ -38,15 +40,15 @@ Distributed, or I would instead use the term "federated" observability platform,
 
 I've picked several "off-the-shelf" software solutions to deliver a proof-of-concept for the federated observability platform.
 
-* Zabbix is a battle-tested open-source observability platform that can handle sophisticated data collection, alert generation, and escalations. What is essential for my POC provides me with a simple yet effective way to catch telemetry, alerts, and other generated artifacts.
+* [Zabbix](https://www.zabbix.com) is a battle-tested open-source observability platform that can handle sophisticated data collection, alert generation, and escalations. What is essential for my POC provides me with a simple yet effective way to catch telemetry, alerts, and other generated artifacts.
 
-* Zenoh is a well-tested peer-to-peer networking solution with a simple and effective API and existing plugins that support data's "storage and delivery" to multiple subscribers. Out of all the pub/sub solutions that exist, I've chosen a particularly peer-to-peer solution that will help create complex observability solutions.
+* [Zenoh](https://www.zenoh.io) is a well-tested peer-to-peer networking solution with a simple and effective API and existing plugins that support data's "storage and delivery" to multiple subscribers. Out of all the pub/sub solutions that exist, I've chosen a particularly peer-to-peer solution that will help create complex observability solutions.
 
 And to make those components "act together," I've created two "missed" software components.
 
-* zbus is a command-line tool that provides all necessary interfacing between Zabbix and Zenoh.
+* [zbus](https://github.com/vulogov/zbus) is a command-line tool that provides all necessary interfacing between Zabbix and Zenoh.
 
-* zbus_zabbix_module is a loadable module that you can load in Zabbix Agent and, through that agent, query data stored in a Zenoh peer-to-peer network.
+* [zabbix_zbus_module](https://github.com/vulogov/zabbix_zbus_module) is a loadable module that you can load in Zabbix Agent and, through that agent, query data stored in a Zenoh peer-to-peer network.
 
 ## How to start Zenoh server ?
 
