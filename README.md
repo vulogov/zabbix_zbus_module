@@ -109,7 +109,7 @@ zbus api login --login loginname --password password
 After you sync a metadata, you can start to export Zabbix telemetry to the bus
 
 ```
-zbus export --path ./example/data --search "history*"
+zbus export history --path ./example/data --search "history*"
 ```
 
 The path that you pass as --path, must contain history JSON files. You can check the outcome of the export
