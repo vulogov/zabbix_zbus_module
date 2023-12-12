@@ -140,3 +140,15 @@ with outcome as
 ```json
 {"downtime":853,"name":"SLA 1","service":"SLA test service","sli":8.867521367521368,"uptime":83}
 ```
+
+You can also get a JSON output through Zabbix Agent by using key zbus.get_raw and process JSON keys in Zabbix as needed
+
+```
+zabbix_get -s 192.X.X.X -k "zbus.get_raw[zbus/sli/v1/local/SLA 1/SLA test service]"
+```
+
+output will be the same
+
+```json
+{"downtime":853,"name":"SLA 1","service":"SLA test service","sli":8.867521367521368,"uptime":83}
+```
