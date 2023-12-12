@@ -117,3 +117,26 @@ The path that you pass as --path, must contain history JSON files. You can check
 ```
 zabbix_get -s 192.X.X.X -k "zbus.get_str[zbus/metric/v1/local/Zabbix server/vfs.fs.dependent/\boot/data]"
 ```
+
+## How to send SLA data from Zabbix servers to a Zenoh bus ?
+
+
+Access to the calculated "service level indicators" is one of the crucial features of the Observability platform. Multiple servers in a federated environment can compute SLI for the services that they control. To bring a proper perspective and high-level view of service availability, we can now calculate a compound SLI while taking low-level SLI as a calculation foundation.
+
+This command exports currently computed SLI to the zbus.
+
+```
+zbus export sla --endpoint=http://192.X.X.X/zabbix  --token=XXXXXXXXXXXXXXXXX
+```
+
+SLI that are stored on the bus are queryable.
+
+```
+zbus   query query-raw --key "zbus/sli/v1/local/SLA 1/SLA test service" --all
+```
+
+with outcome as
+
+```json
+{"downtime":853,"name":"SLA 1","service":"SLA test service","sli":8.867521367521368,"uptime":83}
+```
