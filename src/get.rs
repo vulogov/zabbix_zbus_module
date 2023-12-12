@@ -35,3 +35,23 @@ pub extern fn zbus_module_get_str(key: *const c_char) -> *const c_char {
         }
     }
 }
+
+#[no_mangle]
+pub extern fn zbus_module_get_raw(key: *const c_char) -> *const c_char {
+    match unsafe { CStr::from_ptr(key).to_str() } {
+        Ok(zbus_key) => {
+            match zbus_zenoh::get(zbus_key.to_string()) {
+                Some(res) => {
+                    return CString::new(res.to_string()).expect("Expecting a value").into_raw();
+                }
+                None => {
+                    return std::ptr::null();
+                }
+            }
+        }
+        Err(err) => {
+            log::error!("Error converting key: {:?}", err);
+            return std::ptr::null();
+        }
+    }
+}
