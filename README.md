@@ -152,3 +152,20 @@ output will be the same
 ```json
 {"downtime":853,"name":"SLA 1","service":"SLA test service","sli":8.867521367521368,"uptime":83}
 ```
+
+## How to execute a ZB-script scripts using zbus tool
+
+Sub-command "script" will initiate ZB-script interpreter and pass script to execution. The keys of this sub-command are:
+
+* --stdin - take script form standard input.
+* --file - take script from local file. Full path to the file is expected.
+* --uri - take script from HTTP/HTTPS server.
+* --eval - pass script snippet throug CLI
+
+You can pass arguments to the ZB-scipt engine after ""--"" like following
+
+```bash
+zbus script --eval "print(ARGV)"  -- 1 2 3
+```
+
+The arguments will be passed to global variable ARGV in ZB-script engine.
