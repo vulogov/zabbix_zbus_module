@@ -118,6 +118,12 @@ The path that you pass as --path, must contain history JSON files. You can check
 zabbix_get -s 192.X.X.X -k "zbus.get_str[zbus/metric/v1/local/Zabbix server/vfs.fs.dependent/\boot/data]"
 ```
 
+You can also scrape data from Prometheus exporter and ingest this data into a telemetry bus
+
+```
+zbus export prometheus --in-loop --every 15 --exporter http://127.0.0.1:9100/metrics
+```
+
 ## How to send SLA data from Zabbix servers to a Zenoh bus ?
 
 
