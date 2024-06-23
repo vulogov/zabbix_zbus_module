@@ -2,6 +2,10 @@
 name = "zbus_module"
 version = "0.1.0"
 edition = "2021"
+description = "Zabbix loadable module for accessing data on ZBUS telemetry bus"
+license-file = "LICENSE"
+homepage = "https://github.com/vulogov/zabbix_zbus_module"
+
 
 [lib]
 crate-type = ["cdylib"]
