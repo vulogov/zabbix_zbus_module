@@ -1,6 +1,6 @@
 [package]
 name = "zbus_module"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 description = "Zabbix loadable module for accessing data on ZBUS telemetry bus"
 license-file = "LICENSE"
