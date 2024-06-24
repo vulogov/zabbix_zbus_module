@@ -2,7 +2,7 @@
 name = "zbus_module"
 version = "0.2.0"
 edition = "2021"
-description = "Zabbix loadable module for accessing data on ZBUS telemetry bus"
+description = "Zabbix loadable module for accessing and querying data on ZBUS telemetry bus"
 license-file = "LICENSE"
 homepage = "https://github.com/vulogov/zabbix_zbus_module"
 
@@ -18,5 +18,5 @@ hostname = "0.3.*"
 log = "0.4.*"
 serde = { version = "1.0.*", features = ["derive"] }
 serde_json = { version="1.0.*", default-features = true }
-zenoh = "0.10.0-rc"
+zenoh = "0.10.1-rc"
 serde_json_path = "0.6.7"
