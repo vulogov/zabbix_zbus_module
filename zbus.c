@@ -10,6 +10,7 @@ static int      item_timeout = 0;
 extern int zbus_module_init(void);
 extern int zbus_module_ping(void);
 extern char* zbus_module_get_str(char*);
+extern char* zbus_module_query_str(char*, char*);
 extern char* zbus_module_get_raw(char*);
 extern void free_string(char*);
 
@@ -18,17 +19,23 @@ static int      zbus_get_str(AGENT_REQUEST *request, AGENT_RESULT *result);
 static int      zbus_get_int(AGENT_REQUEST *request, AGENT_RESULT *result);
 static int      zbus_get_float(AGENT_REQUEST *request, AGENT_RESULT *result);
 static int      zbus_get_raw(AGENT_REQUEST *request, AGENT_RESULT *result);
-
+static int      zbus_query_raw(AGENT_REQUEST *request, AGENT_RESULT *result);
+static int      zbus_query_int(AGENT_REQUEST *request, AGENT_RESULT *result);
+static int      zbus_query_float(AGENT_REQUEST *request, AGENT_RESULT *result);
 
 
 static ZBX_METRIC keys[] =
 /*      KEY                     FLAG            FUNCTION        TEST PARAMETERS */
 {
-        {"zbus.ping",          0,              zbus_ping,       NULL},
-        {"zbus.get_str",       CF_HAVEPARAMS,  zbus_get_str,    NULL},
-        {"zbus.get_int",       CF_HAVEPARAMS,  zbus_get_int,    NULL},
-        {"zbus.get_float",     CF_HAVEPARAMS,  zbus_get_float,  NULL},
-        {"zbus.get_raw",       CF_HAVEPARAMS,  zbus_get_raw,    NULL},
+        {"zbus.ping",          0,               zbus_ping,       NULL},
+        {"zbus.get_str",       CF_HAVEPARAMS,   zbus_get_str,    NULL},
+        {"zbus.get_int",       CF_HAVEPARAMS,   zbus_get_int,    NULL},
+        {"zbus.get_float",     CF_HAVEPARAMS,   zbus_get_float,  NULL},
+        {"zbus.get",           CF_HAVEPARAMS,   zbus_get_raw,    NULL},
+        {"zbus.query_str",     CF_HAVEPARAMS,   zbus_query_raw,    NULL},
+        {"zbus.query_int",     CF_HAVEPARAMS,   zbus_query_int,    NULL},
+        {"zbus.query_float",   CF_HAVEPARAMS,   zbus_query_float,  NULL},
+        {"zbus.query",         CF_HAVEPARAMS,   zbus_query_raw,    NULL},
         {NULL}
 };
 
@@ -117,6 +124,27 @@ static int      zbus_get_raw(AGENT_REQUEST *request, AGENT_RESULT *result)
     }
 }
 
+static int      zbus_query_raw(AGENT_REQUEST *request, AGENT_RESULT *result)
+{
+
+    if (request->nparam < 2) {
+      SET_MSG_RESULT(result, strdup("Key and query not provided"));
+      return SYSINFO_RET_FAIL;
+    } else {
+      char *buffer = zbus_module_query_str(get_rparam(request, 0), get_rparam(request, 1));
+
+      if (buffer == NULL) {
+        SET_MSG_RESULT(result, strdup("Key not found on zbus, or query returned NONE"));
+        return SYSINFO_RET_FAIL;
+      } else {
+        SET_STR_RESULT(result, strdup(buffer));
+        free_string(buffer);
+        return SYSINFO_RET_OK;
+      }
+    }
+}
+
+
 static int      zbus_get_int(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
 
@@ -144,6 +172,33 @@ static int      zbus_get_int(AGENT_REQUEST *request, AGENT_RESULT *result)
     }
 }
 
+static int      zbus_query_int(AGENT_REQUEST *request, AGENT_RESULT *result)
+{
+
+    if (request->nparam < 2) {
+      SET_MSG_RESULT(result, strdup("Key and query not provided"));
+      return SYSINFO_RET_FAIL;
+    } else {
+      char *buffer = zbus_module_query_str(get_rparam(request, 0), get_rparam(request, 1));
+
+      if (buffer == NULL) {
+        SET_MSG_RESULT(result, strdup("Key not found on zbus, or query returned NONE"));
+        return SYSINFO_RET_FAIL;
+      } else {
+        char* ptr;
+        long res = strtol(buffer, &ptr, 10);
+        if (buffer == ptr) {
+          free_string(buffer);
+          SET_MSG_RESULT(result, strdup("Error parsing value"));
+          return SYSINFO_RET_FAIL;
+        }
+        SET_UI64_RESULT(result, res);
+        free_string(buffer);
+        return SYSINFO_RET_OK;
+      }
+    }
+}
+
 static int      zbus_get_float(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
 
@@ -155,6 +210,33 @@ static int      zbus_get_float(AGENT_REQUEST *request, AGENT_RESULT *result)
 
       if (buffer == NULL) {
         SET_MSG_RESULT(result, strdup("Key not found on zbus"));
+        return SYSINFO_RET_FAIL;
+      } else {
+        char* ptr;
+        double res = strtod(buffer, &ptr);
+        if (buffer == ptr) {
+          free_string(buffer);
+          SET_MSG_RESULT(result, strdup("Error parsing value"));
+          return SYSINFO_RET_FAIL;
+        }
+        SET_DBL_RESULT(result, res);
+        free_string(buffer);
+        return SYSINFO_RET_OK;
+      }
+    }
+}
+
+static int      zbus_query_float(AGENT_REQUEST *request, AGENT_RESULT *result)
+{
+
+    if (request->nparam < 2) {
+      SET_MSG_RESULT(result, strdup("Key and query not provided"));
+      return SYSINFO_RET_FAIL;
+    } else {
+      char *buffer = zbus_module_query_str(get_rparam(request, 0), get_rparam(request, 1));
+
+      if (buffer == NULL) {
+        SET_MSG_RESULT(result, strdup("Key not found on zbus, or query returned NONE"));
         return SYSINFO_RET_FAIL;
       } else {
         char* ptr;
