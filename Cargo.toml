@@ -4,7 +4,7 @@ version = "0.2.0"
 edition = "2021"
 description = "Zabbix loadable module for accessing and querying data on ZBUS telemetry bus"
 license-file = "LICENSE"
-homepage = "https://github.com/vulogov/zabbix_zbus_module"
+repository = "https://github.com/vulogov/zabbix_zbus_module"
 
 
 [lib]
